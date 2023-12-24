@@ -20,13 +20,46 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(direct = true) {
+    this.direct = direct;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  encrypt(message,  key) {
+    if (message === undefined || key === undefined) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    let encryptedMessage = this.vigenere(message, key, 'encrypt');
+    return this.direct ? encryptedMessage : encryptedMessage.split('').reverse().join('');
+  }
+  decrypt(encryptedMessage, key) {
+    if (encryptedMessage === undefined || key === undefined) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    let decryptedMessage = this.vigenere(encryptedMessage, key, 'decrypt');
+    return this.direct ? decryptedMessage : decryptedMessage.split('').reverse().join('');
+  }
+
+  vigenere(text, key, mode) {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    text = text.toUpperCase();
+    key = key.toUpperCase();
+    let result = '';
+    let keyIndex = 0;
+
+    for (let i = 0; i < text.length; i++) {
+      if (alphabet.includes(text[i])) {
+        let shift = alphabet.indexOf(key[keyIndex % key.length]);
+        if (mode === 'decrypt') {
+          shift = -shift + alphabet.length;
+        }
+        result += alphabet[(alphabet.indexOf(text[i]) + shift) % alphabet.length];
+        keyIndex++;
+      } else {
+        result += text[i];
+      }
+    }
+    return result;
   }
 }
 
